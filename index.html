@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="林子杰"><title>LINZIJIE'S BLOG</title><meta name="description" content="A Blog Powered By Hexo"><meta name="keywords" content=""><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 4.2.1"><link rel="stylesheet" href="/css/prism.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">人生苦短, 我用GOLANG!</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">LINZIJIE's BLOG</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a class="current" href="/">首页</a></li><li><a href="/archives">归档</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about/index.html">关于</a></li><li><a href="/resume/index.html">个人简历</a></li><li class="soc"></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-container"><p class="post-title"><a href="/2023/08/06/algorithm-prd/">PRD伪随机算法</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-08-06</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/算法笔记/" title="算法笔记">算法笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/二分查找/" title="二分查找">二分查找</a><span>&nbsp;</span><a class="a-tag" href="/tags/伪随机/" title="伪随机">伪随机</a><span>&nbsp;</span></span></p><p class="post-abstract">1 问题描述1：进行第一次攻击，暴击概率为C%，如果未暴击则进入2，如果暴击则进行下一次暴击计算；
+2：进行第二次攻击，暴击概率为2C%，如果未暴击则进入3，如果暴击则进行下一次暴击计算；
+3：进行第三次攻击，暴击概率为3C%，如果未暴击则进入4，如果暴击则进行下一次暴击计算；
+4：进行第四次攻击，暴击概率为4C...</p></div><div class="post-container"><p class="post-title"><a href="/2023/08/04/golang-oop/">Go语言面向对象编程</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-08-04</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/Golang基础/" title="Golang基础">Golang基础</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span></span></p><p class="post-abstract">Go语言的面向对象编程
+Go语言支持面向对象（OOP）的继承、封装和多态的特性，但是和传统的面向对象变成有区别；
+Go语言没有类（class），Go语言基于结构体（struct）来实现面向对象；
+Go语言的面向对象十分简介，它去掉了传统面向对象语言的方法重载、构造函数和析构函数、隐藏this指针等；
+
+1. 类（...</p></div><div class="post-container"><p class="post-title"><a href="/2023/08/03/grpc-gateway/">【gRPC学习笔记】gRPC的Gateway实现</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-08-03</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/gRPC学习笔记/" title="gRPC学习笔记">gRPC学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gRPC/" title="gRPC">gRPC</a><span>&nbsp;</span></span></p><p class="post-abstract">gRPC的Gateway实现01 准备工作1.1 安装Go插件 
+1.2 添加proto3文件在pb文件夹下创建google/api文件夹，并且将http.proto和annotations.proto文件放到该目录下。
+02 代码实现2.1 修改proto3文件 
+2.2 生成代码添加--grpc-gatewa...</p></div><div class="post-container"><p class="post-title"><a href="/2023/08/01/grpc-stream/">【gRPC学习笔记】gRPC的流式 (stream) 传输模式</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-08-01</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/gRPC学习笔记/" title="gRPC学习笔记">gRPC学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gRPC/" title="gRPC">gRPC</a><span>&nbsp;</span></span></p><p class="post-abstract">gRPC的流式 (stream) 传输模式01 流式传输模式根据请求和响应的是否是流式（stream）传输可以将服务分为以下几种传输模式：
+
+
+
+传输模式
+请求流
+响应流
+
+
+
+ServerStream
+✅
+
+
+
+ClientStream
+
+✅
+
+
+BidirectionalStream
+✅
+✅
+
+
+在proto...</p></div><div class="post-container"><p class="post-title"><a href="/2023/08/01/grpc-helloworld/">【gRPC学习笔记】Go语言的gRPC入门</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-08-01</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/gRPC学习笔记/" title="gRPC学习笔记">gRPC学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gRPC/" title="gRPC">gRPC</a><span>&nbsp;</span></span></p><p class="post-abstract">gRPC入门01 环境配置1.1 安装Go语言protocol编译插件插件将会放到GOPATH的bin目录下：
+ 
+如果无法使用protoc命令，则需要到GitHub的releases页面下载插件，并且添加到PATH中
+1.2 添加gRPC的Go依赖包在go mod模式下添加grpc的依赖包：
+ 
+02 编写pr...</p></div><div class="post-container"><p class="post-title"><a href="/2023/01/02/golang-benchmark/">Go语言性能调优</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-01-02</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/Golang基础/" title="Golang基础">Golang基础</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span></span></p><p class="post-abstract">Go语言性能调优
+如何编写更简洁清晰的代码；
+常用的Go语言程序优化手段；
+熟悉Go程序性能分析工具；
+了解工程中性能优化的原则和流程；
+
+1 高质量编程编写的代码能够达到正确可靠、简介清晰的目标，比如各种边界条件的考虑、异常情况处理以及可读性和维护性等方面。可以参考Go语言开发者Dave Cheney的The ...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/10/gin-gorm/">【GIN学习笔记】Gorm的使用</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-10</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract">Ⅰ ORM工具ORM (Object Relational Mapping)
+
+优点：提高开发效率。
+
+缺点：牺牲执行性能、牺牲灵活性、弱化SQL能力。
+
+
+数据表 &lt;-&gt; 结构体
+数据行 &lt;-&gt; 结构体实例
+字段 &lt;-&gt; 结构体字段 
+Ⅱ GORM框架一、安装框架 
+二、简单...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/07/gin-middleware/">【GIN学习笔记】Gin框架中间件</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-07</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract">Ⅰ 什么是中间件？在开发者处理请求的过程中，加入用户自己的Hook函数；
+中间件适合处理一下公共的业务逻辑，比如登录认证、权限校验、数据分页、日志记录等。
+Ⅱ Gin框架的中间件一、单独注册
+首先定义一个计时的中间件，该函数属于gin.HandlerFunc类型：
+
+ 
+
+然后使用该中间件：
+
+ 
+当使用GET请...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/06/gin-router/">【GIN学习笔记】Gin框架路由和路由组</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-06</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract">Ⅰ 普通路由 
+也可以使用Any()函数，按Context.Request.Method的值来处理不同的请求方法：
+ 
+对于没有配置处理函数的路由，可以指定一个默认的404方法：
+ 
+Ⅱ 路由组通常将拥有共同URL前缀的路由划分到一个路由组下面，例如/video/index、/video/search、/vide...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/06/golang-test/">【Golang基础】测试</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-06</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/Golang基础/" title="Golang基础">Golang基础</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span></span></p><p class="post-abstract">Go语言的测试回归测试：终端进行测试
+集成测试：功能维度的测试，某个接口的测试
+单元测试：单独的函数模块进行测试
+1 Go语言中的测试规则
+所有的测试文件以_test.go结尾；
+测试函数为func TestXxx(*testing.T)的形式；
+初始化逻辑放到TestMain中；
+
+ 
+2 单元测试输入 -&g...</p></div><div class="pagination no-margin-bottom"><p class="clearfix"><p> 第 1 页 / 共 2 页 &nbsp;</p><p><span class="pre pagbuttons"><i class="fa fa-angle-double-left"></i>&nbsp;<a role="navigation" href="/" aria-label="上一页">上一页</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/page/2/" aria-label="下一页">下一页</a>&nbsp;<i class="fa fa-angle-double-right"></i></span></p></p></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>

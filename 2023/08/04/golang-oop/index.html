@@ -1,0 +1,128 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="林子杰"><title>Go语言面向对象编程 · LINZIJIE'S BLOG</title><meta name="description" content="Go语言的面向对象编程
+Go语言支持面向对象（OOP）的继承、封装和多态的特性，但是和传统的面向对象变成有区别；
+Go语言没有类（class），Go语言基于结构体（struct）来实现面向对象；
+Go语言的面向对象十分简介，它去掉了传统面向对象语言的方法重载、构造函数和析构函数、隐藏this指针等；"><meta name="og:description" content="Go语言的面向对象编程
+Go语言支持面向对象（OOP）的继承、封装和多态的特性，但是和传统的面向对象变成有区别；
+Go语言没有类（class），Go语言基于结构体（struct）来实现面向对象；
+Go语言的面向对象十分简介，它去掉了传统面向对象语言的方法重载、构造函数和析构函数、隐藏this指针等；"><meta name="twitter:site" content="LINZIJIE'S BLOG"><meta name="twitter:title" content="Go语言面向对象编程"><meta name="twitter:card" content="summary"><meta name="keywords" content=""><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 4.2.1"><link rel="stylesheet" href="/css/prism.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">人生苦短, 我用GOLANG!</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">LINZIJIE's BLOG</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a href="/">首页</a></li><li><a href="/archives">归档</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about/index.html">关于</a></li><li><a href="/resume/index.html">个人简历</a></li><li class="soc"></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post-container"><p class="post-title"><a>Go语言面向对象编程</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-08-04</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/Golang基础/" title="Golang基础">Golang基础</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span></span></p><p class="post-abstract"><h1 id="Go语言的面向对象编程"><a href="#Go语言的面向对象编程" class="headerlink" title="Go语言的面向对象编程"></a>Go语言的面向对象编程</h1><ul>
+<li>Go语言支持面向对象（OOP）的继承、封装和多态的特性，但是和传统的面向对象变成有区别；</li>
+<li>Go语言没有类（class），Go语言基于结构体（struct）来实现面向对象；</li>
+<li>Go语言的面向对象十分简介，它去掉了传统面向对象语言的方法重载、构造函数和析构函数、隐藏this指针等；</li>
+</ul>
+<h2 id="1-类（class）的封装"><a href="#1-类（class）的封装" class="headerlink" title="1. 类（class）的封装"></a>1. 类（class）的封装</h2><p>通常情况下，我们将结构体字段的首字母小写，使其成为私有（private）类型，避免外界跳过值校验而直接对结构体内部的字段进行修改。</p>
+<p>假设现在需要定义一个<code>Person</code>类，它包含姓名和年龄两个字段：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">package</span> person
+
+<span class="token keyword">type</span> Person <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    name <span class="token builtin">string</span> <span class="token comment" spellcheck="true">// 姓名</span>
+    age  <span class="token builtin">int</span>    <span class="token comment" spellcheck="true">// 年龄，范围在[0, 150]</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>由于<code>Person</code>结构体内部的字段均为首字母为小写，因此我们无法在<code>person</code>包外部通过直接赋值来构造一个实例，因此需要为<code>Person</code>添加一个<strong>构造器（constructor）</strong>：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// NewPerson Person类的构造器，它对年龄字段进行了安全校验</span>
+<span class="token keyword">func</span> <span class="token function">NewPerson</span><span class="token punctuation">(</span>name <span class="token builtin">string</span><span class="token punctuation">,</span> age <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>Person<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> age <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> age <span class="token operator">></span> <span class="token number">150</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"age range needs to be between 0 and 150, but found %d"</span><span class="token punctuation">,</span> age<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span>Person<span class="token punctuation">{</span>name<span class="token punctuation">,</span> age<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>除了在实例化时使用构造器外，还需要为<code>Person</code>类提供字段值的对外访问，即<code>Get</code>和<code>Set</code>方法：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// GetName Name字段的Get方法</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Person<span class="token punctuation">)</span> <span class="token function">GetName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> p<span class="token punctuation">.</span>name
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// SetName Name字段的Set方法</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Person<span class="token punctuation">)</span> <span class="token function">SetName</span><span class="token punctuation">(</span>name <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    p<span class="token punctuation">.</span>name <span class="token operator">=</span> name
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// GetAge Age字段的Get方法</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Person<span class="token punctuation">)</span> <span class="token function">GetAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">int</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> p<span class="token punctuation">.</span>age
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// SetAge Age字段的Set方法，对年龄字段进行了安全校验</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>p <span class="token operator">*</span>Person<span class="token punctuation">)</span> <span class="token function">SetAge</span><span class="token punctuation">(</span>age <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> age <span class="token operator">&lt;</span> <span class="token number">0</span> <span class="token operator">||</span> age <span class="token operator">></span> <span class="token number">150</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Errorf</span><span class="token punctuation">(</span><span class="token string">"age range needs to be between 0 and 150, but found %d"</span><span class="token punctuation">,</span> age<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    p<span class="token punctuation">.</span>age <span class="token operator">=</span> age
+    <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>这样我们就可以通过包导入的方式在外部对<code>Person</code>进行实例化：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    p<span class="token punctuation">,</span> err <span class="token operator">:=</span> model<span class="token punctuation">.</span><span class="token function">NewPerson</span><span class="token punctuation">(</span><span class="token string">"张三"</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"%#v\n"</span><span class="token punctuation">,</span> p<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// &amp;model.Person{name:"张三", age:18}</span>
+    <span class="token keyword">if</span> err <span class="token operator">:=</span> p<span class="token punctuation">.</span><span class="token function">SetAge</span><span class="token punctuation">(</span><span class="token operator">-</span><span class="token number">8</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// age range needs to be between 0 and 150, but found -8</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>当然，大多数封装的 <strong>类（class）</strong> 不仅有成员变量还有成员方法，Go语言同样支持这一特性，只需要在函数名前面加上对于结构体指针即可；</p>
+<p>同样地，通过控制函数名首字母的大小写来控制该方法的是公共的还是私有的；</p>
+<p>上面的<code>Get</code>和<code>Set</code>方法其实就是<code>Person</code>类的公有的成员方法，我们也可以自定义更多的成员方法。</p>
+<h2 id="2-伪继承"><a href="#2-伪继承" class="headerlink" title="2. 伪继承"></a>2. 伪继承</h2><p>Golang没有C++通过冒号或者Java通过<code>extends</code>、<code>implements</code>关键字来实现继承，只能通过添加<code>匿名成员</code>的方式来实现类似继承的特性：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 以匿名成员的方式使`Teacher`成为`Person`的子类</span>
+<span class="token keyword">type</span> Teacher <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    <span class="token operator">*</span>Person
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">NewTeacher</span><span class="token punctuation">(</span>name <span class="token builtin">string</span><span class="token punctuation">,</span> age <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>Teacher<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    p<span class="token punctuation">,</span> err <span class="token operator">:=</span> <span class="token function">NewPerson</span><span class="token punctuation">(</span>name<span class="token punctuation">,</span> age<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token boolean">nil</span><span class="token punctuation">,</span> err
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token operator">&amp;</span>Teacher<span class="token punctuation">{</span>p<span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token boolean">nil</span> <span class="token comment" spellcheck="true">// 以组合的方式将"父类"的实例添加到"子类"</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>而实际上，该做法本质还是一种<strong>组合</strong>，只是在调用时可以通过实例访问到<code>Person</code>的成员和变量：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    t<span class="token punctuation">,</span> <span class="token boolean">_</span> <span class="token operator">:=</span> person<span class="token punctuation">.</span><span class="token function">NewTeacher</span><span class="token punctuation">(</span><span class="token string">"张三"</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">)</span>
+    fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"name: %s, age: %d\n"</span><span class="token punctuation">,</span> t<span class="token punctuation">.</span><span class="token function">GetName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> t<span class="token punctuation">.</span><span class="token function">GetAge</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// name: 张三, age: 100018</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="3-多态（Polymorphism）"><a href="#3-多态（Polymorphism）" class="headerlink" title="3. 多态（Polymorphism）"></a>3. 多态（Polymorphism）</h2><p>事实上，Golang的多态是通过<code>interface</code>实现的，它是种<code>duck typing</code>类型，在被具体类型实例化后表现出实例类型的特征：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> Animal <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+    <span class="token function">Info</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<p>我们再抽象出两个类<code>Cat</code>和<code>Dog</code>来分别实现<code>Info</code>方法：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> Cat <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    Name <span class="token builtin">string</span>
+    Age  <span class="token builtin">int</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>c <span class="token operator">*</span>Cat<span class="token punctuation">)</span> <span class="token function">Info</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"这是一只猫，它的名字叫%s, 今年%d岁了."</span><span class="token punctuation">,</span> c<span class="token punctuation">.</span>Name<span class="token punctuation">,</span> c<span class="token punctuation">.</span>Age<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">type</span> Dog <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    Name <span class="token builtin">string</span>
+    Age  <span class="token builtin">int</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>d <span class="token operator">*</span>Dog<span class="token punctuation">)</span> <span class="token function">Info</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"这是一只狗，它的名字叫%s, 今年%d岁了."</span><span class="token punctuation">,</span> d<span class="token punctuation">.</span>Name<span class="token punctuation">,</span> d<span class="token punctuation">.</span>Age<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>最后分别调用两个类的<code>Info</code>方法：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">var</span> cat<span class="token punctuation">,</span> dog animal<span class="token punctuation">.</span>Animal
+cat <span class="token operator">=</span> <span class="token operator">&amp;</span>animal<span class="token punctuation">.</span>Cat<span class="token punctuation">{</span>
+    Name<span class="token punctuation">:</span> <span class="token string">"kitty"</span><span class="token punctuation">,</span>
+    Age<span class="token punctuation">:</span>  <span class="token number">2</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>cat<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 这是一只猫，它的名字叫kitty, 今年2岁了.</span>
+dog <span class="token operator">=</span> <span class="token operator">&amp;</span>animal<span class="token punctuation">.</span>Dog<span class="token punctuation">{</span>
+    Name<span class="token punctuation">:</span> <span class="token string">"sally"</span><span class="token punctuation">,</span>
+    Age<span class="token punctuation">:</span>  <span class="token number">3</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+fmt<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>dog<span class="token punctuation">.</span><span class="token function">Info</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 这是一只狗，它的名字叫sally, 今年3岁了.</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</p></div><div class="share"><span>分享到</span>&nbsp;<span class="soc"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></span><span class="soc"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></span><span class="soc"><a class="fa fa-twitter" href="http://twitter.com/home?status=https://linzijie1998.github.io/2023/08/04/golang-oop/%20LINZIJIE' target="_blank" rel="noopener"S BLOG%20Go语言面向对象编程"></a></span></div><div class="pagination"><p class="clearfix"><span class="pre pagbuttons"><a role="navigation" href="/2023/08/06/algorithm-prd/" title="PRD伪随机算法"><i class="fa fa-angle-double-left"></i>&nbsp;上一篇: PRD伪随机算法</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/2023/08/03/grpc-gateway/" title="【gRPC学习笔记】gRPC的Gateway实现">下一篇: 【gRPC学习笔记】gRPC的Gateway实现&nbsp;<i class="fa fa-angle-double-right"></i></a></span></p></div></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="林子杰"><title>【GIN学习笔记】Gorm的使用 · LINZIJIE'S BLOG</title><meta name="description" content="Ⅰ ORM工具ORM (Object Relational Mapping)
+
+优点：提高开发效率。
+
+缺点：牺牲执行性能、牺牲灵活性、弱化SQL能力。
+
+
+数据表 &amp;lt;-&amp;gt; 结构体
+数据行 &amp;lt;-&amp;gt; 结构体实例
+字段 &amp;lt;-&amp;gt; 结构体字段 
+Ⅱ GORM框架一、安装框"><meta name="og:description" content="Ⅰ ORM工具ORM (Object Relational Mapping)
+
+优点：提高开发效率。
+
+缺点：牺牲执行性能、牺牲灵活性、弱化SQL能力。
+
+
+数据表 &amp;lt;-&amp;gt; 结构体
+数据行 &amp;lt;-&amp;gt; 结构体实例
+字段 &amp;lt;-&amp;gt; 结构体字段 
+Ⅱ GORM框架一、安装框"><meta name="twitter:site" content="LINZIJIE'S BLOG"><meta name="twitter:title" content="【GIN学习笔记】Gorm的使用"><meta name="twitter:card" content="summary"><meta name="keywords" content=""><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 4.2.1"><link rel="stylesheet" href="/css/prism.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">人生苦短, 我用GOLANG!</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">LINZIJIE's BLOG</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a href="/">首页</a></li><li><a href="/archives">归档</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about/index.html">关于</a></li><li><a href="/resume/index.html">个人简历</a></li><li class="soc"></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post-container"><p class="post-title"><a>【GIN学习笔记】Gorm的使用</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-10</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract"><h2 id="Ⅰ-ORM工具"><a href="#Ⅰ-ORM工具" class="headerlink" title="Ⅰ ORM工具"></a>Ⅰ ORM工具</h2><p><code>ORM (Object Relational Mapping)</code></p>
+<ul>
+<li><p>优点：提高开发效率。</p>
+</li>
+<li><p>缺点：牺牲执行性能、牺牲灵活性、弱化SQL能力。</p>
+</li>
+</ul>
+<p>数据表 &lt;-&gt; 结构体</p>
+<p>数据行 &lt;-&gt; 结构体实例</p>
+<p>字段 &lt;-&gt; 结构体字段 </p>
+<h2 id="Ⅱ-GORM框架"><a href="#Ⅱ-GORM框架" class="headerlink" title="Ⅱ GORM框架"></a>Ⅱ GORM框架</h2><h3 id="一、安装框架"><a href="#一、安装框架" class="headerlink" title="一、安装框架"></a>一、安装框架</h3><pre class="line-numbers language-shell"><code class="language-shell">go get -u github.com/jinzhu/gorm
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<h3 id="二、简单示例-以MYSQL为例"><a href="#二、简单示例-以MYSQL为例" class="headerlink" title="二、简单示例 (以MYSQL为例)"></a>二、简单示例 (以MYSQL为例)</h3><ol>
+<li>首先需要导入对应包和数据库驱动</li>
+</ol>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">import</span> <span class="token punctuation">(</span>
+    <span class="token string">"github.com/jinzhu/gorm"</span>
+    <span class="token boolean">_</span> <span class="token string">"github.com/jinzhu/gorm/dialects/mysql"</span>
+<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<ol start="2">
+<li>定义一个<code>UserInfo</code>的结构体：</li>
+</ol>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> UserInfo <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    ID     <span class="token builtin">uint</span>
+    Name   <span class="token builtin">string</span>
+    Gender <span class="token builtin">string</span>
+    Hobby  <span class="token builtin">string</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ol start="3">
+<li>连接数据库：</li>
+</ol>
+<pre class="line-numbers language-go"><code class="language-go">db<span class="token punctuation">,</span> err <span class="token operator">:=</span> gorm<span class="token punctuation">.</span><span class="token function">Open</span><span class="token punctuation">(</span><span class="token string">"mysql"</span><span class="token punctuation">,</span> <span class="token string">"root:123456@(localhost:3306)/gorm_db?charset=utf8mb4&amp;parseTime=True&amp;loc=Local"</span><span class="token punctuation">)</span>
+<span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+    <span class="token function">panic</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">defer</span> db<span class="token punctuation">.</span><span class="token function">Close</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ol start="4">
+<li>增删查改：</li>
+</ol>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 创建表 自动迁移 (把结构体和数据表进行对应)</span>
+db<span class="token punctuation">.</span><span class="token function">AutoMigrate</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>UserInfo<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">// 添加</span>
+u1 <span class="token operator">:=</span> UserInfo<span class="token punctuation">{</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token string">"蔡徐坤"</span><span class="token punctuation">,</span> <span class="token string">"男"</span><span class="token punctuation">,</span> <span class="token string">"篮球"</span><span class="token punctuation">}</span>
+db<span class="token punctuation">.</span><span class="token function">Create</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>u1<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// 查询</span>
+<span class="token keyword">var</span> u UserInfo
+db<span class="token punctuation">.</span><span class="token function">First</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>u<span class="token punctuation">)</span>
+fmt<span class="token punctuation">.</span><span class="token function">Printf</span><span class="token punctuation">(</span><span class="token string">"u: %#v\n"</span><span class="token punctuation">,</span> u<span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// 更新</span>
+db<span class="token punctuation">.</span><span class="token function">Model</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>u<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Update</span><span class="token punctuation">(</span><span class="token string">"hobby"</span><span class="token punctuation">,</span> <span class="token string">"rap"</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// 删除</span>
+db<span class="token punctuation">.</span><span class="token function">Delete</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>u<span class="token punctuation">)</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="三、约定"><a href="#三、约定" class="headerlink" title="三、约定"></a>三、约定</h3><ol>
+<li><code>GORM</code>默认设置<code>ID</code>字段为表的主键，可使用<code>gorm:&quot;primary_key&quot;</code>手动设置；</li>
+</ol>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> User <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+  ID   <span class="token builtin">string</span> <span class="token comment" spellcheck="true">// 名为`ID`的字段会默认作为表的主键</span>
+  Name <span class="token builtin">string</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 使用`AnimalID`作为主键</span>
+<span class="token keyword">type</span> Animal <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+  AnimalID <span class="token builtin">int64</span> <span class="token string">`gorm:"primary_key"`</span>
+  Name     <span class="token builtin">string</span>
+  Age      <span class="token builtin">int64</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ol start="2">
+<li>表名默认为结构体名称的复数，并且为小写；</li>
+</ol>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> User <span class="token keyword">struct</span> <span class="token punctuation">{</span><span class="token punctuation">}</span> <span class="token comment" spellcheck="true">// 默认表名是 `users`</span>
+
+<span class="token comment" spellcheck="true">// 将 User 的表名设置为 `profiles`</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>User<span class="token punctuation">)</span> <span class="token function">TableName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token string">"profiles"</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token punctuation">(</span>u User<span class="token punctuation">)</span> <span class="token function">TableName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> u<span class="token punctuation">.</span>Role <span class="token operator">==</span> <span class="token string">"admin"</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token string">"admin_users"</span>
+  <span class="token punctuation">}</span> <span class="token keyword">else</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token string">"users"</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// 禁用默认表名的复数形式，如果置为 true，则 `User` 的默认表名是 `user`</span>
+db<span class="token punctuation">.</span><span class="token function">SingularTable</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span>
+
+<span class="token comment" spellcheck="true">// -------------------------------------------------------------------------------</span>
+<span class="token comment" spellcheck="true">// 使用User结构体创建名为`deleted_users`的表</span>
+db<span class="token punctuation">.</span><span class="token function">Table</span><span class="token punctuation">(</span><span class="token string">"deleted_users"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">CreateTable</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>User<span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token keyword">var</span> deleted_users <span class="token punctuation">[</span><span class="token punctuation">]</span>User
+db<span class="token punctuation">.</span><span class="token function">Table</span><span class="token punctuation">(</span><span class="token string">"deleted_users"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Find</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>deleted_users<span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//// SELECT * FROM deleted_users;</span>
+
+db<span class="token punctuation">.</span><span class="token function">Table</span><span class="token punctuation">(</span><span class="token string">"deleted_users"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Where</span><span class="token punctuation">(</span><span class="token string">"name = ?"</span><span class="token punctuation">,</span> <span class="token string">"jinzhu"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">Delete</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment" spellcheck="true">//// DELETE FROM deleted_users WHERE name = 'jinzhu';</span>
+
+<span class="token comment" spellcheck="true">// -------------------------------------------------------------------------------</span>
+<span class="token comment" spellcheck="true">// GORM还支持更改默认表名称规则</span>
+gorm<span class="token punctuation">.</span>DefaultTableNameHandler <span class="token operator">=</span> <span class="token keyword">func</span> <span class="token punctuation">(</span>db <span class="token operator">*</span>gorm<span class="token punctuation">.</span>DB<span class="token punctuation">,</span> defaultTableName <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token builtin">string</span>  <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token string">"prefix_"</span> <span class="token operator">+</span> defaultTableName<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ol start="3">
+<li>结构体字段由两个单词组成时，表对应字段会使用<code>_</code>分割，并且为小写，可以使用<code>gorm:&quot;column:beast_id&quot;</code>修改：</li>
+</ol>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> Animal <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+  AnimalId    <span class="token builtin">int64</span>     <span class="token string">`gorm:"column:beast_id"`</span>         <span class="token comment" spellcheck="true">// set column name to `beast_id`</span>
+  Birthday    time<span class="token punctuation">.</span>Time <span class="token string">`gorm:"column:day_of_the_beast"`</span> <span class="token comment" spellcheck="true">// set column name to `day_of_the_beast`</span>
+  Age         <span class="token builtin">int64</span>     <span class="token string">`gorm:"column:age_of_the_beast"`</span> <span class="token comment" spellcheck="true">// set column name to `age_of_the_beast`</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="Ⅲ-GORM-Model"><a href="#Ⅲ-GORM-Model" class="headerlink" title="Ⅲ GORM Model"></a>Ⅲ GORM Model</h2><p>使用ORM工具时，通常需要在代码中定义<code>Models</code>来和数据库中的表进行映射。<code>GORM</code>中内置了一个<code>gorm.Model</code>结构体：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// Model a basic GoLang struct which includes the following fields: ID, CreatedAt, UpdatedAt, DeletedAt</span>
+<span class="token comment" spellcheck="true">// It may be embedded into your model or you may build your own model without it</span>
+<span class="token comment" spellcheck="true">//    type User struct {</span>
+<span class="token comment" spellcheck="true">//      gorm.Model</span>
+<span class="token comment" spellcheck="true">//    }</span>
+<span class="token keyword">type</span> Model <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    ID        <span class="token builtin">uint</span> <span class="token string">`gorm:"primarykey"`</span>
+    CreatedAt time<span class="token punctuation">.</span>Time
+    UpdatedAt time<span class="token punctuation">.</span>Time
+    DeletedAt DeletedAt <span class="token string">`gorm:"index"`</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<ul>
+<li><code>CreateAt</code>: 记录该记录的初始创建时间 (可以通过UPDATE更新)；</li>
+<li><code>UpdateAt</code>：该记录只要有值更新时就会更新该字段；</li>
+<li><code>DeleteAt</code>：调用<code>Delete</code>删除该记录时，会设置该字段，并不会从数据库中删除该记录 (查询时会查看该字段是否为空)；</li>
+</ul>
+<p>我们在定义模型时，可以将其嵌入到自己的模型中：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> User <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    gorm<span class="token punctuation">.</span>Model
+    Name <span class="token builtin">string</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>一个<code>User</code>的示例：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> User <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    gorm<span class="token punctuation">.</span>Model   <span class="token comment" spellcheck="true">// 内嵌gorm.Model模型</span>
+    Name         <span class="token builtin">string</span>
+    Age          sql<span class="token punctuation">.</span>NullInt64
+    Birthday     <span class="token operator">*</span>time<span class="token punctuation">.</span>Time
+    Email        <span class="token builtin">string</span>  <span class="token string">`gorm:"type:varchar(100);unique_index"`</span>
+    Role         <span class="token builtin">string</span>  <span class="token string">`gorm:"size:255"`</span>        <span class="token comment" spellcheck="true">// 字段大小255</span>
+    MemberNumber <span class="token operator">*</span><span class="token builtin">string</span> <span class="token string">`gorm:"unique;not null"`</span> <span class="token comment" spellcheck="true">// 会员号 唯一且非空</span>
+    Num          <span class="token builtin">int</span>     <span class="token string">`gorm:"AUTO_INCREMENT"`</span>  <span class="token comment" spellcheck="true">// 自增类型</span>
+    Address      <span class="token builtin">string</span>  <span class="token string">`gorm:"index:addr"`</span>      <span class="token comment" spellcheck="true">// 给address字段创建addr的索引</span>
+    IgnoreMe     <span class="token builtin">int</span>     <span class="token string">`gorm:"-"`</span>               <span class="token comment" spellcheck="true">// 忽略本字段</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</p></div><div class="share"><span>分享到</span>&nbsp;<span class="soc"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></span><span class="soc"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></span><span class="soc"><a class="fa fa-twitter" href="http://twitter.com/home?status=https://linzijie1998.github.io/2022/12/10/gin-gorm/%20LINZIJIE' target="_blank" rel="noopener"S BLOG%20【GIN学习笔记】Gorm的使用"></a></span></div><div class="pagination"><p class="clearfix"><span class="pre pagbuttons"><a role="navigation" href="/2023/01/02/golang-benchmark/" title="Go语言性能调优"><i class="fa fa-angle-double-left"></i>&nbsp;上一篇: Go语言性能调优</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/2022/12/07/gin-middleware/" title="【GIN学习笔记】Gin框架中间件">下一篇: 【GIN学习笔记】Gin框架中间件&nbsp;<i class="fa fa-angle-double-right"></i></a></span></p></div></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>

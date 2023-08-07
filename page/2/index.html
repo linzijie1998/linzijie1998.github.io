@@ -1,0 +1,46 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="林子杰"><title>LINZIJIE'S BLOG</title><meta name="description" content="A Blog Powered By Hexo"><meta name="keywords" content=""><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 4.2.1"><link rel="stylesheet" href="/css/prism.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">人生苦短, 我用GOLANG!</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">LINZIJIE's BLOG</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a class="current" href="/">首页</a></li><li><a href="/archives">归档</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about/index.html">关于</a></li><li><a href="/resume/index.html">个人简历</a></li><li class="soc"></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-container"><p class="post-title"><a href="/2022/12/04/gin-redirect/">【GIN学习笔记】Gin框架重定向和转发</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-04</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract">重定向和转发的区别：
+
+相同点：页面都会实现跳转；
+不同点：请求转发的地址栏url不会改变，而重定向会变成新的url。
+
+
+在Gin框架中实现重定向：
+ 
+其中http.StatusMovedPermanently表示状态码301：即永久重定向
+
+在Gin框架中实现转发：
+ 
+转发的步骤：(1) 修改ctx的请求...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/04/golang-concurrency/">【Golang基础】并发编程</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-04</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/Golang基础/" title="Golang基础">Golang基础</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span></span></p><p class="post-abstract">Go语言并发编程并发：多线程程序通过时间片的切换在一个核的CPU上运行
+并行：多线程程序直接利用多核CPU实现同时运行
+1 Goroutine协程：用户态，轻量级线程，栈KB级别，可以由Go语言本身完成，比线程轻量
+线程：内核态，线程跑多个协程，栈MB级别，切换、创建、停止都属于比较昂贵的系统操作
+Go语言中使用...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/03/gin-upload/">【GIN学习笔记】Gin框架文件的上传</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-03</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract">
+首先简单写一个HTML页面实现文件上传的交互：
+ 
+
+然后在写一个GET方法，当访问路径/upload时显示该网页：
+ 
+
+接着处理前端传来的POST请求：
+
+单文件上传
+
+ 
+
+多文件上传
+为了实现多文件上传需要对HTML页面的file类型的input标签添加multiple属性：
+
+
+ 
+​	和单文件上传不...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/02/gin-params/">【GIN学习笔记】Gin框架获取参数</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-02</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract">本节主要总结如何从获取从前端传来的参数，例如querystring、form表单、json数据等等。以及如何使用ShouldBind()方法快速高效地自动获取不同类型的数据参数，本节重点为第Ⅳ小节内容。
+Ⅰ 获取QUERYSTRING参数querystring指URL中?后携带的参数，例如/search?lang...</p></div><div class="post-container"><p class="post-title"><a href="/2022/12/01/gin-helloworld/">【GIN学习笔记】Gin框架的安装和使用</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2022-12-01</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/GIN学习笔记/" title="GIN学习笔记">GIN学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gin/" title="gin">gin</a><span>&nbsp;</span></span></p><p class="post-abstract">Ⅰ Gin框架安装
+初始化Go项目，使用go mod管理项目
+ 
+
+下载并且安装Gin框架
+ 
+
+
+Ⅱ Gin示例 
+</p></div><div class="pagination no-margin-bottom"><p class="clearfix"><p> 第 2 页 / 共 2 页 &nbsp;</p><p><span class="pre pagbuttons"><i class="fa fa-angle-double-left"></i>&nbsp;<a role="navigation" href="/" aria-label="上一页">上一页</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/" aria-label="下一页">下一页</a>&nbsp;<i class="fa fa-angle-double-right"></i></span></p></p></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>

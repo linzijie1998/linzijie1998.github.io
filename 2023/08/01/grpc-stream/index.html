@@ -1,0 +1,249 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="林子杰"><title>【gRPC学习笔记】gRPC的流式 (stream) 传输模式 · LINZIJIE'S BLOG</title><meta name="description" content="gRPC的流式 (stream) 传输模式01 流式传输模式根据请求和响应的是否是流式（stream）传输可以将服务分为以下几种传输模式：
+
+
+
+传输模式
+请求流
+响应流
+
+
+
+ServerStream
+✅
+
+
+
+ClientStream
+
+✅
+
+
+BidirectionalStream
+✅
+✅
+
+"><meta name="og:description" content="gRPC的流式 (stream) 传输模式01 流式传输模式根据请求和响应的是否是流式（stream）传输可以将服务分为以下几种传输模式：
+
+
+
+传输模式
+请求流
+响应流
+
+
+
+ServerStream
+✅
+
+
+
+ClientStream
+
+✅
+
+
+BidirectionalStream
+✅
+✅
+
+"><meta name="twitter:site" content="LINZIJIE'S BLOG"><meta name="twitter:title" content="【gRPC学习笔记】gRPC的流式 (stream) 传输模式"><meta name="twitter:card" content="summary"><meta name="keywords" content=""><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 4.2.1"><link rel="stylesheet" href="/css/prism.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">人生苦短, 我用GOLANG!</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">LINZIJIE's BLOG</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a href="/">首页</a></li><li><a href="/archives">归档</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about/index.html">关于</a></li><li><a href="/resume/index.html">个人简历</a></li><li class="soc"></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post-container"><p class="post-title"><a>【gRPC学习笔记】gRPC的流式 (stream) 传输模式</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-08-01</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/gRPC学习笔记/" title="gRPC学习笔记">gRPC学习笔记</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span><a class="a-tag" href="/tags/gRPC/" title="gRPC">gRPC</a><span>&nbsp;</span></span></p><p class="post-abstract"><h1 id="gRPC的流式-stream-传输模式"><a href="#gRPC的流式-stream-传输模式" class="headerlink" title="gRPC的流式 (stream) 传输模式"></a>gRPC的流式 (stream) 传输模式</h1><h2 id="01-流式传输模式"><a href="#01-流式传输模式" class="headerlink" title="01 流式传输模式"></a>01 流式传输模式</h2><p>根据请求和响应的是否是<code>流式（stream）传输</code>可以将服务分为以下几种传输模式：</p>
+<table>
+<thead>
+<tr>
+<th>传输模式</th>
+<th>请求流</th>
+<th>响应流</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ServerStream</td>
+<td>✅</td>
+<td></td>
+</tr>
+<tr>
+<td>ClientStream</td>
+<td></td>
+<td>✅</td>
+</tr>
+<tr>
+<td>BidirectionalStream</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+</tbody></table>
+<p>在<code>proto3</code>中可以使用<code>stream</code>关键字来定义RPC服务的传输模式：</p>
+<pre class="line-numbers language-go"><code class="language-go">service MessageService <span class="token punctuation">{</span>
+    rpc <span class="token function">ServerStream</span><span class="token punctuation">(</span>stream Req<span class="token punctuation">)</span> <span class="token function">returns</span> <span class="token punctuation">(</span>Resp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    rpc <span class="token function">ClientStream</span><span class="token punctuation">(</span>Req<span class="token punctuation">)</span> <span class="token function">returns</span> <span class="token punctuation">(</span>stream Resp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    rpc <span class="token function">BidirectionalStream</span><span class="token punctuation">(</span>stream Req<span class="token punctuation">)</span> <span class="token function">returns</span> <span class="token punctuation">(</span>stream Resp<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="02-代码实现"><a href="#02-代码实现" class="headerlink" title="02 代码实现"></a>02 代码实现</h2><h3 id="2-1-ServerStream"><a href="#2-1-ServerStream" class="headerlink" title="2.1 ServerStream"></a>2.1 ServerStream</h3><p>ServerStream模式的接口包含一个<code>Recv</code>方法用于接收流式传入的请求体，一个<code>SendAndClose</code>方法用于返回一个响应体并且关闭流：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> MessageService_ServerStreamServer <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+    <span class="token function">SendAndClose</span><span class="token punctuation">(</span><span class="token operator">*</span>Resp<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token comment" spellcheck="true">// 发送响应体并且关闭流</span>
+    <span class="token function">Recv</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>Req<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span>      <span class="token comment" spellcheck="true">// 接收请求流</span>
+    grpc<span class="token punctuation">.</span>ServerStream
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>下面是一个ServerStream模式的实现Demo：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// server</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span><span class="token operator">*</span>MessageService<span class="token punctuation">)</span> <span class="token function">ServerStream</span><span class="token punctuation">(</span>server message<span class="token punctuation">.</span>MessageService_ServerStreamServer<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">{</span>
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
+        req<span class="token punctuation">,</span> err <span class="token operator">:=</span> server<span class="token punctuation">.</span><span class="token function">Recv</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> errors<span class="token punctuation">.</span><span class="token function">Is</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> io<span class="token punctuation">.</span>EOF<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Received over!"</span><span class="token punctuation">)</span>
+                <span class="token keyword">if</span> err <span class="token operator">:=</span> server<span class="token punctuation">.</span><span class="token function">SendAndClose</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>message<span class="token punctuation">.</span>Resp<span class="token punctuation">{</span>Content<span class="token punctuation">:</span> <span class="token string">"Received over!"</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+                    <span class="token keyword">return</span> err
+                <span class="token punctuation">}</span>
+                <span class="token keyword">break</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span> err
+        <span class="token punctuation">}</span>
+        log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">GetContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// client</span>
+<span class="token keyword">func</span> <span class="token function">serverStreamDemo</span><span class="token punctuation">(</span>client message<span class="token punctuation">.</span>MessageServiceClient<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    serverStream<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span><span class="token function">ServerStream</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
+        err <span class="token operator">:=</span> serverStream<span class="token punctuation">.</span><span class="token function">Send</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>message<span class="token punctuation">.</span>Req<span class="token punctuation">{</span>Content<span class="token punctuation">:</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"This is %dth req message!"</span><span class="token punctuation">,</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+    resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> serverStream<span class="token punctuation">.</span><span class="token function">CloseAndRecv</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span><span class="token function">GetContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-2-ClientStream"><a href="#2-2-ClientStream" class="headerlink" title="2.2 ClientStream"></a>2.2 ClientStream</h3><p>ClientStream模式的接口仅需要一个<code>Send</code>方法用于返回响应体：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> MessageService_ClientStreamServer <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+    <span class="token function">Send</span><span class="token punctuation">(</span><span class="token operator">*</span>Resp<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token comment" spellcheck="true">// 发送响应流</span>
+    grpc<span class="token punctuation">.</span>ServerStream
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<p>下面是一个ClientStream模式的实现Demo：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// server</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span><span class="token operator">*</span>MessageService<span class="token punctuation">)</span> <span class="token function">ClientStream</span><span class="token punctuation">(</span>req <span class="token operator">*</span>message<span class="token punctuation">.</span>Req<span class="token punctuation">,</span> server message<span class="token punctuation">.</span>MessageService_ClientStreamServer<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">{</span>
+    log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>req<span class="token punctuation">.</span><span class="token function">GetContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
+        err <span class="token operator">:=</span> server<span class="token punctuation">.</span><span class="token function">Send</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>message<span class="token punctuation">.</span>Resp<span class="token punctuation">{</span>Content<span class="token punctuation">:</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"This is %dth resp message!"</span><span class="token punctuation">,</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> err
+        <span class="token punctuation">}</span>
+        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token boolean">nil</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// client</span>
+<span class="token keyword">func</span> <span class="token function">clientStreamDemo</span><span class="token punctuation">(</span>client message<span class="token punctuation">.</span>MessageServiceClient<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    clientStream<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span><span class="token function">ClientStream</span><span class="token punctuation">(</span>ctx<span class="token punctuation">,</span> <span class="token operator">&amp;</span>message<span class="token punctuation">.</span>Req<span class="token punctuation">{</span>Content<span class="token punctuation">:</span> <span class="token string">"I need resp message!"</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
+        resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> clientStream<span class="token punctuation">.</span><span class="token function">Recv</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> errors<span class="token punctuation">.</span><span class="token function">Is</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> io<span class="token punctuation">.</span>EOF<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Receive over!"</span><span class="token punctuation">)</span>
+                <span class="token keyword">break</span>
+            <span class="token punctuation">}</span>
+            log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span><span class="token function">GetContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="2-3-BidirectionalStream"><a href="#2-3-BidirectionalStream" class="headerlink" title="2.3 BidirectionalStream"></a>2.3 BidirectionalStream</h3><p>BidirectionalStream模式的接口包含一个<code>Send</code>方法发送响应体，以及一个<code>Recv</code>方法来接收请求流：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> MessageService_BidirectionalStreamServer <span class="token keyword">interface</span> <span class="token punctuation">{</span>
+    <span class="token function">Send</span><span class="token punctuation">(</span><span class="token operator">*</span>Resp<span class="token punctuation">)</span> <span class="token builtin">error</span>
+    <span class="token function">Recv</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">(</span><span class="token operator">*</span>Req<span class="token punctuation">,</span> <span class="token builtin">error</span><span class="token punctuation">)</span>
+    grpc<span class="token punctuation">.</span>ServerStream
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>下面是一个BidirectionalStream模式的实现Demo：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// server</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span><span class="token operator">*</span>MessageService<span class="token punctuation">)</span> <span class="token function">BidirectionalStream</span><span class="token punctuation">(</span>server message<span class="token punctuation">.</span>MessageService_BidirectionalStreamServer<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token punctuation">{</span>
+    <span class="token keyword">type</span> meta <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+        msg <span class="token builtin">string</span>
+        err <span class="token builtin">error</span>
+    <span class="token punctuation">}</span>
+    metaChan <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">chan</span> meta<span class="token punctuation">)</span>
+
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">{</span>
+            req<span class="token punctuation">,</span> err <span class="token operator">:=</span> server<span class="token punctuation">.</span><span class="token function">Recv</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+                metaChan <span class="token operator">&lt;-</span> meta<span class="token punctuation">{</span>err<span class="token punctuation">:</span> err<span class="token punctuation">}</span>
+                <span class="token keyword">break</span>
+            <span class="token punctuation">}</span>
+            metaChan <span class="token operator">&lt;-</span> meta<span class="token punctuation">{</span>msg<span class="token punctuation">:</span> req<span class="token punctuation">.</span><span class="token function">GetContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">}</span>
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">for</span> <span class="token punctuation">{</span>
+        m <span class="token operator">:=</span> <span class="token operator">&lt;-</span>metaChan
+        <span class="token keyword">if</span> m<span class="token punctuation">.</span>err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            <span class="token keyword">if</span> errors<span class="token punctuation">.</span><span class="token function">Is</span><span class="token punctuation">(</span>m<span class="token punctuation">.</span>err<span class="token punctuation">,</span> io<span class="token punctuation">.</span>EOF<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Receive over!"</span><span class="token punctuation">)</span>
+                <span class="token keyword">return</span> <span class="token boolean">nil</span>
+            <span class="token punctuation">}</span>
+            <span class="token keyword">return</span> m<span class="token punctuation">.</span>err
+        <span class="token punctuation">}</span>
+        err <span class="token operator">:=</span> server<span class="token punctuation">.</span><span class="token function">Send</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>message<span class="token punctuation">.</span>Resp<span class="token punctuation">{</span>Content<span class="token punctuation">:</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"I got your message: %s"</span><span class="token punctuation">,</span> m<span class="token punctuation">.</span>msg<span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            <span class="token keyword">return</span> err
+        <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// client</span>
+<span class="token keyword">func</span> <span class="token function">bidirectionalStreamDemo</span><span class="token punctuation">(</span>client message<span class="token punctuation">.</span>MessageServiceClient<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    bidirectionalStream<span class="token punctuation">,</span> err <span class="token operator">:=</span> client<span class="token punctuation">.</span><span class="token function">BidirectionalStream</span><span class="token punctuation">(</span>ctx<span class="token punctuation">)</span>
+    <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    wg <span class="token operator">:=</span> sync<span class="token punctuation">.</span>WaitGroup<span class="token punctuation">{</span><span class="token punctuation">}</span>
+    wg<span class="token punctuation">.</span><span class="token function">Add</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
+        err <span class="token operator">:=</span> bidirectionalStream<span class="token punctuation">.</span><span class="token function">Send</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>message<span class="token punctuation">.</span>Req<span class="token punctuation">{</span>Content<span class="token punctuation">:</span> fmt<span class="token punctuation">.</span><span class="token function">Sprintf</span><span class="token punctuation">(</span><span class="token string">"This is %d req message!"</span><span class="token punctuation">,</span> i<span class="token operator">+</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+        <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">if</span> err <span class="token operator">=</span> bidirectionalStream<span class="token punctuation">.</span><span class="token function">CloseSend</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">for</span> <span class="token punctuation">{</span>
+            resp<span class="token punctuation">,</span> err <span class="token operator">:=</span> bidirectionalStream<span class="token punctuation">.</span><span class="token function">Recv</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+            <span class="token keyword">if</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+                <span class="token keyword">if</span> errors<span class="token punctuation">.</span><span class="token function">Is</span><span class="token punctuation">(</span>err<span class="token punctuation">,</span> io<span class="token punctuation">.</span>EOF<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+                    log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span><span class="token string">"Receive over!"</span><span class="token punctuation">)</span>
+                    <span class="token keyword">break</span>
+                <span class="token punctuation">}</span>
+                log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+            <span class="token punctuation">}</span>
+            log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>resp<span class="token punctuation">.</span><span class="token function">GetContent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        wg<span class="token punctuation">.</span><span class="token function">Done</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    wg<span class="token punctuation">.</span><span class="token function">Wait</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</p></div><div class="share"><span>分享到</span>&nbsp;<span class="soc"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></span><span class="soc"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></span><span class="soc"><a class="fa fa-twitter" href="http://twitter.com/home?status=https://linzijie1998.github.io/2023/08/01/grpc-stream/%20LINZIJIE' target="_blank" rel="noopener"S BLOG%20【gRPC学习笔记】gRPC的流式 (stream) 传输模式"></a></span></div><div class="pagination"><p class="clearfix"><span class="pre pagbuttons"><a role="navigation" href="/2023/08/03/grpc-gateway/" title="【gRPC学习笔记】gRPC的Gateway实现"><i class="fa fa-angle-double-left"></i>&nbsp;上一篇: 【gRPC学习笔记】gRPC的Gateway实现</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/2023/08/01/grpc-helloworld/" title="【gRPC学习笔记】Go语言的gRPC入门">下一篇: 【gRPC学习笔记】Go语言的gRPC入门&nbsp;<i class="fa fa-angle-double-right"></i></a></span></p></div></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>

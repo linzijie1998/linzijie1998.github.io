@@ -1,0 +1,297 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="X-UA-Compatible" content="IE=edge"><meta name="author" content="林子杰"><title>Go语言性能调优 · LINZIJIE'S BLOG</title><meta name="description" content="Go语言性能调优
+如何编写更简洁清晰的代码；
+常用的Go语言程序优化手段；
+熟悉Go程序性能分析工具；
+了解工程中性能优化的原则和流程；
+
+1 高质量编程编写的代码能够达到正确可靠、简介清晰的目标，比如各种边界条件的考虑、异常情况处理以及可读性和维护性等方面。可以参考Go语言开发者Dave Chen"><meta name="og:description" content="Go语言性能调优
+如何编写更简洁清晰的代码；
+常用的Go语言程序优化手段；
+熟悉Go程序性能分析工具；
+了解工程中性能优化的原则和流程；
+
+1 高质量编程编写的代码能够达到正确可靠、简介清晰的目标，比如各种边界条件的考虑、异常情况处理以及可读性和维护性等方面。可以参考Go语言开发者Dave Chen"><meta name="twitter:site" content="LINZIJIE'S BLOG"><meta name="twitter:title" content="Go语言性能调优"><meta name="twitter:card" content="summary"><meta name="keywords" content=""><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport"><meta content="yes" name="apple-mobile-web-app-capable"><meta content="black" name="apple-mobile-web-app-status-bar-style"><meta content="telephone=no" name="format-detection"><meta name="renderer" content="webkit"><link rel="short icon" href="images/favicon.png" type="image/x-icon"><link rel="stylesheet" href="/css/bootstrap.min.css"><link rel="stylesheet" href="/css/font-awesome.min.css"><link rel="stylesheet" href="/css/style.css"><link rel="alternate" type="application/atom+xml" title="ATOM 1.0" href="/atom.xml"><meta name="generator" content="Hexo 4.2.1"><link rel="stylesheet" href="/css/prism.css" type="text/css">
+<link rel="stylesheet" href="/css/prism-line-numbers.css" type="text/css"></head><body><div class="container" id="stage"><div class="row"><div class="col-sm-3 col-xs-12 side-container invisible" id="side-bar"><div class="vertical-text site-title"><h3 class="site-title-small" tabindex="-1"><a class="a-title" href="/">人生苦短, 我用GOLANG!</a></h3><h1 class="site-title-large" tabindex="-1"><a class="a-title" href="/">LINZIJIE's BLOG</a></h1><!--h6(onclick="triggerSiteNav()") Trigger--></div><br class="visible-lg visible-md visible-sm"><div class="site-title-links" id="site-nav"><ul><li><a href="/">首页</a></li><li><a href="/archives">归档</a></li><li><a href="/categories">分类</a></li><li><a href="/tags">标签</a></li><li><a href="/about/index.html">关于</a></li><li><a href="/resume/index.html">个人简历</a></li><li class="soc"></li></ul><div class="visible-lg visible-md visible-sm site-nav-footer"><br class="site-nav-footer-br"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div><div class="col-sm-9 col-xs-12 main-container invisible" id="main-container"><div class="autopagerize_page_element"><div class="content"><div class="post-page"><div class="post-container"><p class="post-title"><a>Go语言性能调优</a></p><p class="post-meta"><span class="date meta-item">发布于&nbsp;2023-01-02</span><span class="meta-item"><i class="fa fa-folder"></i><span>&nbsp;</span><a class="a-tag" href="/categories/Golang基础/" title="Golang基础">Golang基础</a><span>&nbsp;</span></span><span class="meta-item"><i class="fa fa-tag"></i><span>&nbsp;</span><a class="a-tag" href="/tags/golang/" title="golang">golang</a><span>&nbsp;</span></span></p><p class="post-abstract"><h1 id="Go语言性能调优"><a href="#Go语言性能调优" class="headerlink" title="Go语言性能调优"></a>Go语言性能调优</h1><ul>
+<li>如何编写更简洁清晰的代码；</li>
+<li>常用的Go语言程序优化手段；</li>
+<li>熟悉Go程序性能分析工具；</li>
+<li>了解工程中性能优化的原则和流程；</li>
+</ul>
+<h2 id="1-高质量编程"><a href="#1-高质量编程" class="headerlink" title="1 高质量编程"></a>1 高质量编程</h2><p>编写的代码能够达到正确可靠、简介清晰的目标，比如各种边界条件的考虑、异常情况处理以及可读性和维护性等方面。可以参考Go语言开发者<a href="https://dave.cheney.net/about" target="_blank" rel="noopener">Dave Cheney</a>的<a href="https://the-zen-of-go.netlify.app/" target="_blank" rel="noopener">The Zen of Go</a>。</p>
+<p>如何编写高质量的Go代码，可以从以下几个方面考虑：</p>
+<ul>
+<li>代码格式</li>
+<li>注释</li>
+<li>命名规范</li>
+<li>控制流程</li>
+<li>错误和异常处理</li>
+</ul>
+<h3 id="1-1-代码格式"><a href="#1-1-代码格式" class="headerlink" title="1.1 代码格式"></a>1.1 代码格式</h3><p>官方提供了自动格式化工具<code>gofmt</code>以及依赖包管理工具<code>goimports</code>等，能够让Go语言代码风格统一。</p>
+<h3 id="1-2-注释"><a href="#1-2-注释" class="headerlink" title="1.2 注释"></a>1.2 注释</h3><p>注释应该遵循的规范：</p>
+<ul>
+<li><p>注释应该解释代码的作用（注释公共符号）；</p>
+</li>
+<li><p>注释应该揭示代码如何做的（注释实现过程）；</p>
+</li>
+<li><p>注释应该解释代码实现的原因（解释外部因素、提供额外的上下文）；</p>
+</li>
+<li><p>注释应该解释代码什么情况会出错（解释代码的限制条件）。</p>
+</li>
+</ul>
+<p>公共符号始终要注释：包中声明的每个公共符号（变量、常量、函数、结构体等）都需要添加注释；任何及不明显也不简短的公共功能必须注释；对库中的任何函数都必须进行注释；实现接口的方法可以不需要注释。</p>
+<p><strong>小结：代码是最好的注释，注释应该提供代码为表达出的上下文信息。</strong></p>
+<h3 id="1-3-命名规范"><a href="#1-3-命名规范" class="headerlink" title="1.3 命名规范"></a>1.3 命名规范</h3><p>变量（variable）命名规范</p>
+<ul>
+<li>缩略词全部大写，当且仅当其位于变量开头且不需要导出时小写，例如<code>ServeHTTP</code>、<code>xmlHTTPRequest</code>；</li>
+<li>变量被使用的地方越远，携带的上下文信息则需要更多，例如全局变量等；</li>
+</ul>
+<p>函数（function）命名规范</p>
+<ul>
+<li>函数名不携带包名的上下文信息；</li>
+<li>函数名尽量简短；</li>
+<li>当名为<code>foo</code>的包的某个函数返回<code>Foo</code>类型时可以省略类型信息，返回其他类型<code>T</code>时可以在函数中加入类型信息；</li>
+</ul>
+<p>举例：http 包中创建服务的函数</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">Serve</span><span class="token punctuation">(</span>l net<span class="token punctuation">.</span>Listener<span class="token punctuation">,</span> handler Handler<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token comment" spellcheck="true">// Good</span>
+<span class="token keyword">func</span> <span class="token function">ServeHTTP</span><span class="token punctuation">(</span>l net<span class="token punctuation">.</span>Listener<span class="token punctuation">,</span> handler Handler<span class="token punctuation">)</span> <span class="token builtin">error</span> <span class="token comment" spellcheck="true">// Bad</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<p>包（package）命名规范</p>
+<ul>
+<li><strong>必须</strong>只由小写字母组成，不包含下划线等字符；</li>
+<li><strong>必须</strong>包含一定的上下文信息，例如<code>schema</code>、<code>task</code>等；</li>
+<li><strong>必须</strong>不能与标准库同名；</li>
+<li><strong>尽量</strong>不使用常用变量名作为包名，例如使用<code>bufio</code>而不是<code>buf</code>；</li>
+<li><strong>尽量</strong>使用单数而不是复数，例如使用<code>encoding</code>而不是<code>encodings</code>；</li>
+<li><strong>尽量</strong>谨慎地使用缩写，例如使用<code>fmt</code>而不是<code>format</code>。</li>
+</ul>
+<h3 id="1-4-控制流程"><a href="#1-4-控制流程" class="headerlink" title="1.4 控制流程"></a>1.4 控制流程</h3><ul>
+<li><p>线性原理，避免复杂嵌套，保证正常流程，如果<code>if</code>语句中两个分支都包含<code>return</code>语句，则可以去掉冗余的<code>else</code>；</p>
+</li>
+<li><p>尽量保证正常代码路径为最小缩进，优先处理错误情况&#x2F;特殊情况，尽早返回或继续循环来减少嵌套；</p>
+</li>
+</ul>
+<h3 id="1-5-错误和异常处理"><a href="#1-5-错误和异常处理" class="headerlink" title="1.5 错误和异常处理"></a>1.5 错误和异常处理</h3><p>简单错误（仅出现一次的错误，在其他地方不需要捕获）</p>
+<ul>
+<li><p>优先使用<code>errors.New()</code>创建匿名变量来直接表示简单报错；</p>
+</li>
+<li><p>如果有格式化需求则使用<code>fmt.Errorf</code>来格式化；</p>
+</li>
+</ul>
+<p>复杂错误（错误的跟踪链）</p>
+<ul>
+<li><p>错误的<code>Wrap</code>提供了一个<code>error</code>的嵌套能力，从而生成一个<code>error</code>跟踪链；</p>
+</li>
+<li><p>在<code>fmt.Errorf</code>中使用<code>%w</code>来讲一个错误关联至错误链中；</p>
+</li>
+</ul>
+<p>错误判定</p>
+<ul>
+<li><p>判定一个错误是否为特定错误，使用<code>errors.Is</code>而不是<code>==</code>；</p>
+</li>
+<li><p>获取错误链中特定种类的错误，使用<code>errors.As</code>；</p>
+</li>
+</ul>
+<p>PANIC</p>
+<ul>
+<li>不建议在业务代码中使用<code>panic</code>；</li>
+<li>调用函数不包含<code>recover</code>会造成程序崩溃；</li>
+<li>问题可以被屏蔽或解决时，应该使用<code>error</code>代替<code>panic</code>；</li>
+<li>在程序启动阶段发生不可逆转的错误时可以在初始化方法或者<code>main</code>函数中使用<code>panic</code>；</li>
+</ul>
+<p>RECOVER</p>
+<ul>
+<li><p><code>recover</code>只能在被<code>defer</code>函数中使用，<code>defer</code>语句是后进先出；</p>
+</li>
+<li><p><code>recover</code>不能嵌套生效；</p>
+</li>
+<li><p><code>recover</code>只能在当前<code>goroutine</code>生效；</p>
+</li>
+<li><p>如果需要更多的上下文信息，可以<code>recover</code>后使用<code>debug.Stack()</code>在log中记录当前的调用栈，方便原因查找；</p>
+</li>
+</ul>
+<h2 id="2-性能调优建议"><a href="#2-性能调优建议" class="headerlink" title="2 性能调优建议"></a>2 性能调优建议</h2><p>如何评估代码性能：Go语言提供了支持基准性能测试的benchmark工具。</p>
+<h3 id="2-1-Slice"><a href="#2-1-Slice" class="headerlink" title="2.1 Slice"></a>2.1 Slice</h3><p>切片本质是一个数组片段的描述，包括数组指针、片段长度以及片段容量：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">type</span> slice <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    array unsafe<span class="token punctuation">.</span>Pointer <span class="token comment" spellcheck="true">// 数组指针</span>
+    <span class="token builtin">len</span>   <span class="token builtin">int</span>            <span class="token comment" spellcheck="true">// 片段长度</span>
+    <span class="token builtin">cap</span>   <span class="token builtin">int</span>            <span class="token comment" spellcheck="true">// 片段容量</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>切片操作并不复制切片指向的元素，创建一个新的切片会复用原来切片的底层数组。</p>
+<ul>
+<li><p><code>slice</code>预分配内存，切片容量足够时直接讲元素放入对应的内存，容量不足时会先进行一次扩容操作，因此尽可能在使用<code>make</code>初始化切片时提供容量信息；</p>
+</li>
+<li><p>大内存释放问题，由于在已有切片的基础上创建切片时，不会创建新的底层数组，新的切片依然会引用原底层数组，当原切片较大时，就会造成内存的浪费，我们可以使用<code>copy</code>替代<code>re-slice</code>：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// re-slice</span>
+<span class="token keyword">func</span> <span class="token function">GetLastBySlice</span><span class="token punctuation">(</span>origin <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> origin<span class="token punctuation">[</span><span class="token function">len</span><span class="token punctuation">(</span>origin<span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">:</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment" spellcheck="true">// copy</span>
+<span class="token keyword">func</span> <span class="token function">GetLastByCopy</span><span class="token punctuation">(</span>origin <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span> <span class="token punctuation">{</span>
+    result <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token builtin">int</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span>
+    <span class="token function">copy</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> origin<span class="token punctuation">[</span><span class="token function">len</span><span class="token punctuation">(</span>origin<span class="token punctuation">)</span><span class="token operator">-</span><span class="token number">2</span><span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> result
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+</ul>
+<h3 id="2-2-Map"><a href="#2-2-Map" class="headerlink" title="2.2 Map"></a>2.2 Map</h3><p><code>Map</code>的性能调优方向和<code>Slice</code>类似，同样从预分配内存方向考虑：在不断向<code>Map</code>中添加元素时会触发扩容，提前分配好空间可以减少内存的拷贝以及Rehash的消耗，因此根据实际需求提前预估需要的空间是必要的。</p>
+<h3 id="2-3-String"><a href="#2-3-String" class="headerlink" title="2.3 String"></a>2.3 String</h3><p>使用<code>strings.Builder</code>或者<code>bytes.Buffer</code>进行字符串拼接的性能远远由于直接使用<code>+</code>进行拼接，性能表现上<code>string.Buffer</code>更快，其原因在于：</p>
+<ul>
+<li><p>字符串在Go语言中是不可变类型，因此占用的内存大小是固定的；</p>
+</li>
+<li><p>使用<code>+</code>每次都会重新分配内存；</p>
+</li>
+<li><p><code>strings.Builder</code>和<code>bytes.Buffer</code>的底层都是<code>[]byte</code>数组，内存分配策略不需要每次拼接都重新分配内存；</p>
+</li>
+<li><p><code>bytes.Buffer</code>在将<code>[]byte</code>数组转化为字符串时重新申请了一块空间，而<code>strings.Builder</code>是直接将<code>[]byte</code>数组转化为了字符串类型返回：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// bytes.Buffer</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Buffer<span class="token punctuation">)</span> <span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+    <span class="token keyword">if</span> b <span class="token operator">==</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+        <span class="token keyword">return</span> <span class="token string">"&lt;nil>"</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> <span class="token function">string</span><span class="token punctuation">(</span>b<span class="token punctuation">.</span>buf<span class="token punctuation">[</span>b<span class="token punctuation">.</span>off<span class="token punctuation">:</span><span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// strings.Builder</span>
+<span class="token keyword">func</span> <span class="token punctuation">(</span>b <span class="token operator">*</span>Builder<span class="token punctuation">)</span> <span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token builtin">string</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> <span class="token operator">*</span><span class="token punctuation">(</span><span class="token operator">*</span><span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">(</span>unsafe<span class="token punctuation">.</span><span class="token function">Pointer</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>b<span class="token punctuation">.</span>buf<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+</li>
+</ul>
+<p>在已知拼接的字符串长度的情况下，可以使用<code>Grow(size)</code>方法进一步提高字符串拼接的性能。</p>
+<h3 id="2-4-Struct"><a href="#2-4-Struct" class="headerlink" title="2.4 Struct"></a>2.4 Struct</h3><p>使用空结构体节省内存：空结构体<code>struct{}</code>实例不占据如何的内存空间，可以作为各种场景下的占位符：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">EmptyStructMap</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    m <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">int</span><span class="token punctuation">]</span><span class="token keyword">struct</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
+        m<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">struct</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">{</span><span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">func</span> <span class="token function">BoolMap</span><span class="token punctuation">(</span>n <span class="token builtin">int</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    m <span class="token operator">:=</span> <span class="token function">make</span><span class="token punctuation">(</span><span class="token keyword">map</span><span class="token punctuation">[</span><span class="token builtin">int</span><span class="token punctuation">]</span><span class="token builtin">bool</span><span class="token punctuation">)</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> n<span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
+        m<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token boolean">false</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>使用场景：</p>
+<ul>
+<li>实现<code>Set</code>可以考虑用<code>Map</code>代替，例如：<a href="https://github.com/deckarep/golang-set/blob/main/threadunsafe.go" target="_blank" rel="noopener">golang-set</a>；</li>
+<li>只需要用到<code>Map</code>的<code>KEY</code>，而不需要<code>VALUE</code>的场景；</li>
+</ul>
+<h3 id="2-5-Atomic"><a href="#2-5-Atomic" class="headerlink" title="2.5 Atomic"></a>2.5 Atomic</h3><p>在多线程编程场景中，原子操作的性能比互斥锁更优：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token comment" spellcheck="true">// 原子操作</span>
+<span class="token keyword">type</span> atomicCounter <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    i <span class="token builtin">int32</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">func</span> <span class="token function">AtomicAddOne</span><span class="token punctuation">(</span>c <span class="token operator">*</span>atomicCounter<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    atomic<span class="token punctuation">.</span><span class="token function">AddInt32</span><span class="token punctuation">(</span><span class="token operator">&amp;</span>c<span class="token punctuation">.</span>i<span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token comment" spellcheck="true">// 加锁操作</span>
+<span class="token keyword">type</span> mutexCounter <span class="token keyword">struct</span> <span class="token punctuation">{</span>
+    i <span class="token builtin">int32</span>
+    m sync<span class="token punctuation">.</span>Mutex
+<span class="token punctuation">}</span>
+<span class="token keyword">func</span> <span class="token function">MutexAddOne</span><span class="token punctuation">(</span>c <span class="token operator">*</span>mutexCounter<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    c<span class="token punctuation">.</span>m<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    c<span class="token punctuation">.</span>i<span class="token operator">++</span>
+    c<span class="token punctuation">.</span>m<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>其原因在于：</p>
+<ul>
+<li>锁的实现是通过操作系统实现的，属于系统调用，而原子操作是通过硬件实现的，因此效率更高；</li>
+<li><code>sync.Mutex</code>用于保护一段逻辑，不仅仅保护一个变量；</li>
+<li>对于非数值操作，可以使用<code>atomic.Value</code>，能承载一个<code>interface{}</code>；</li>
+</ul>
+<h2 id="3-性能调优实战"><a href="#3-性能调优实战" class="headerlink" title="3 性能调优实战"></a>3 性能调优实战</h2><p>性能调优原则：</p>
+<ul>
+<li>要依赖数据而不是猜测；</li>
+<li>要定位最大瓶颈而不是细枝末节；</li>
+<li>不要过早优化也不要过度优化；</li>
+</ul>
+<h3 id="3-1-性能分析工具pprof"><a href="#3-1-性能分析工具pprof" class="headerlink" title="3.1 性能分析工具pprof"></a>3.1 性能分析工具pprof</h3><ul>
+<li>可以知道应用在什么地方耗费了多少CPU资源和内存资源；</li>
+<li>可以进行可视化的性能数据分析；</li>
+</ul>
+<h3 id="3-2-项目分析"><a href="#3-2-项目分析" class="headerlink" title="3.2 项目分析"></a>3.2 项目分析</h3><p><a href="https://github.com/wolfogre/go-pprof-practice" target="_blank" rel="noopener">项目地址</a></p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    log<span class="token punctuation">.</span><span class="token function">SetFlags</span><span class="token punctuation">(</span>log<span class="token punctuation">.</span>Lshortfile <span class="token operator">|</span> log<span class="token punctuation">.</span>LstdFlags<span class="token punctuation">)</span>
+    log<span class="token punctuation">.</span><span class="token function">SetOutput</span><span class="token punctuation">(</span>os<span class="token punctuation">.</span>Stdout<span class="token punctuation">)</span>
+
+    runtime<span class="token punctuation">.</span><span class="token function">GOMAXPROCS</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>              <span class="token comment" spellcheck="true">// 限制CPU使用数</span>
+    runtime<span class="token punctuation">.</span><span class="token function">SetMutexProfileFraction</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment" spellcheck="true">// 开启锁调用跟踪</span>
+    runtime<span class="token punctuation">.</span><span class="token function">SetBlockProfileRate</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span>     <span class="token comment" spellcheck="true">// 开启阻塞调用跟踪</span>
+
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment" spellcheck="true">// 启动 HTTP server</span>
+        <span class="token keyword">if</span> err <span class="token operator">:=</span> http<span class="token punctuation">.</span><span class="token function">ListenAndServe</span><span class="token punctuation">(</span><span class="token string">":6060"</span><span class="token punctuation">,</span> <span class="token boolean">nil</span><span class="token punctuation">)</span><span class="token punctuation">;</span> err <span class="token operator">!=</span> <span class="token boolean">nil</span> <span class="token punctuation">{</span>
+            log<span class="token punctuation">.</span><span class="token function">Fatal</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span>
+        os<span class="token punctuation">.</span><span class="token function">Exit</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// ...</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>访问：<a href="http://localhost:6060/debug/pprof/" target="_blank" rel="noopener">http://localhost:6060/debug/pprof/</a></p>
+<p><img src="/.io//image-20230119132349219.png" alt="image-20230119132349219"></p>
+<h4 id="3-2-1-CPU性能排查"><a href="#3-2-1-CPU性能排查" class="headerlink" title="3.2.1 CPU性能排查"></a>3.2.1 CPU性能排查</h4><p>采集10秒的数据</p>
+<pre class="line-numbers language-shell"><code class="language-shell">go tool pprof "http://localhost:6060/debug/pprof/profile?seconds=10"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/.io//image-20230119133055105.png" alt="image-20230119133055105"></p>
+<p><strong>top命令</strong></p>
+<ul>
+<li>flat：当前函数本身的执行耗时</li>
+<li>flat%：flat在CPU总时间的占比</li>
+<li>sum%：上面每一行的flat%总和</li>
+<li>cum：当前函数本身加上其调用函数的总耗时</li>
+<li>cum%：cum在CPU总时间的占比</li>
+</ul>
+<p><img src="/.io//image-20230119133236255.png" alt="image-20230119133236255"></p>
+<p>当函数没有调用其它函数时，flat和cum相等；</p>
+<p>当flat等于0时，函数只有其它函数的调用；</p>
+<p><strong>list命令</strong></p>
+<p>由<code>top</code>命令的结果可知，<code>Eat</code>方法占用了很大的CPU资源，我们可以使用<code>list Eat</code>命令对<code>Eat</code>方法进行排查：</p>
+<p><img src="/.io//image-20230119134051789.png" alt="image-20230119134051789"></p>
+<h4 id="3-2-2-Heap堆内存排查"><a href="#3-2-2-Heap堆内存排查" class="headerlink" title="3.2.2 Heap堆内存排查"></a>3.2.2 Heap堆内存排查</h4><pre class="line-numbers language-shell"><code class="language-shell">go tool pprof "http://localhost:6060/debug/pprof/heap"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>和CPU排查的方法类似：使用<code>top</code>和<code>list</code>进行问题定位</p>
+<p><img src="/.io//image-20230119134917510.png" alt="image-20230119134917510"></p>
+<h4 id="3-2-3-协程排查"><a href="#3-2-3-协程排查" class="headerlink" title="3.2.3 协程排查"></a>3.2.3 协程排查</h4><p>可以添加<code>-http</code>参数进行可视化分析：</p>
+<pre class="line-numbers language-shell"><code class="language-shell">go tool pprof -http=:8080 "http://localhost:6060/debug/pprof/heap"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>在<code>View</code>中切换为<code>Flame Graph</code>，可以更直观地进行问题排查</p>
+<p><img src="/.io//image-20230119135852750.png" alt="image-20230119135852750"></p>
+<p>排查到<code>wolf</code>下的<code>Drink</code>方法存在问题：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>w <span class="token operator">*</span>Wolf<span class="token punctuation">)</span> <span class="token function">Drink</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>w<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"drink"</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 问题</span>
+    <span class="token keyword">for</span> i <span class="token operator">:=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span> <span class="token punctuation">{</span>
+        <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+            time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span><span class="token number">30</span> <span class="token operator">*</span> time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+        <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="3-2-4-Mutex排查"><a href="#3-2-4-Mutex排查" class="headerlink" title="3.2.4 Mutex排查"></a>3.2.4 Mutex排查</h4><pre class="line-numbers language-shell"><code class="language-shell">go tool pprof -http=:8080 "http://localhost:6060/debug/pprof/mutex"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>排查问题：</p>
+<pre class="line-numbers language-go"><code class="language-go"><span class="token keyword">func</span> <span class="token punctuation">(</span>w <span class="token operator">*</span>Wolf<span class="token punctuation">)</span> <span class="token function">Howl</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    log<span class="token punctuation">.</span><span class="token function">Println</span><span class="token punctuation">(</span>w<span class="token punctuation">.</span><span class="token function">Name</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token string">"howl"</span><span class="token punctuation">)</span>
+    <span class="token comment" spellcheck="true">// 问题</span>
+    m <span class="token operator">:=</span> <span class="token operator">&amp;</span>sync<span class="token punctuation">.</span>Mutex<span class="token punctuation">{</span><span class="token punctuation">}</span>
+    m<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">go</span> <span class="token keyword">func</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        time<span class="token punctuation">.</span><span class="token function">Sleep</span><span class="token punctuation">(</span>time<span class="token punctuation">.</span>Second<span class="token punctuation">)</span>
+        m<span class="token punctuation">.</span><span class="token function">Unlock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">}</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    m<span class="token punctuation">.</span><span class="token function">Lock</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="3-2-5-阻塞排查"><a href="#3-2-5-阻塞排查" class="headerlink" title="3.2.5 阻塞排查"></a>3.2.5 阻塞排查</h4><pre class="line-numbers language-shell"><code class="language-shell">go tool pprof "http://localhost:6060/debug/pprof/block"
+<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><img src="/.io//image-20230119141031985.png" alt="image-20230119141031985"></p>
+<p><code>pprof</code>通过过滤策略会忽略一些点。</p>
+</p></div><div class="share"><span>分享到</span>&nbsp;<span class="soc"><a class="fa fa-bookmark" href="javascript:(function(){EN_CLIP_HOST='http://www.evernote.com';try{var%20x=document.createElement('SCRIPT');x.type='text/javascript';x.src=EN_CLIP_HOST+'/public/bookmarkClipper.js?'+(new%20Date().getTime()/100000);document.getElementsByTagName('head')[0].appendChild(x);}catch(e){location.href=EN_CLIP_HOST+'/clip.action?url='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title);}})();" ref="nofollow" target="_blank"></a></span><span class="soc"><a class="fa fa-weibo" href="javascript:void((function(s,d,e){try{}catch(e){}var f='http://service.weibo.com/share/share.php?',u=d.location.href,p=['url=',e(u),'&amp;title=',e(d.title),'&amp;appkey=2924220432'].join('');function a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=620,height=450,left=',(s.width-620)/2,',top=',(s.height-450)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent)){setTimeout(a,0)}else{a()}})(screen,document,encodeURIComponent));"></a></span><span class="soc"><a class="fa fa-twitter" href="http://twitter.com/home?status=https://linzijie1998.github.io/2023/01/02/golang-benchmark/%20LINZIJIE' target="_blank" rel="noopener"S BLOG%20Go语言性能调优"></a></span></div><div class="pagination"><p class="clearfix"><span class="pre pagbuttons"><a role="navigation" href="/2023/08/01/grpc-helloworld/" title="【gRPC学习笔记】Go语言的gRPC入门"><i class="fa fa-angle-double-left"></i>&nbsp;上一篇: 【gRPC学习笔记】Go语言的gRPC入门</a></span><span>&nbsp;</span><span class="next pagbuttons"><a role="navigation" href="/2022/12/10/gin-gorm/" title="【GIN学习笔记】Gorm的使用">下一篇: 【GIN学习笔记】Gorm的使用&nbsp;<i class="fa fa-angle-double-right"></i></a></span></p></div></div></div></div><div class="visible-xs site-bottom-footer"><footer><p>&copy;&nbsp;2023&nbsp;<a target="_blank" href="https://linzijie1998.github.io" rel="noopener noreferrer">林子杰</a></p></footer></div></div></div></div><script src="/js/jquery-3.1.0.min.js"></script><script src="/js/bootstrap.min.js"></script><script src="/js/jquery-migrate-1.2.1.min.js"></script><script src="/js/jquery.appear.js"></script><script src="/js/google-analytics.js"></script><script src="/js/typography.js"></script></body></html>
